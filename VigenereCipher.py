@@ -1,13 +1,6 @@
 # Alunos: Henrique Valente Lima 211055380
 #         Gabriel Brito Franca  211020867
 
-# Cifra de Vigenère
-
-#   Parte I: cifrador/decifrador
-#     O cifrador recebe uma senha e uma mensagem que é cifrada segundo a cifra de Vigenère,
-#     gerando um criptograma, enquanto o decifrador recebe uma senha e um criptograma que é
-#     decifrado segundo a cifra de Vigenère, recuperando uma mensagem.
-
 import re
 
 en_frequencies = [0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015,
@@ -56,7 +49,10 @@ def get_c(sequence):
 
 
 def probable_key_length(ciphertext, en):
-    print("-------------Chances for key lenght-------------")
+    if en:
+        print("\n\n--------> Search values next to 1.73 <--------\n")
+    else:
+        print("\n\n--------> Search values next to 1.94 <--------\n")
     for guess in range(21):
         coincidence_sum = 0.0
         for i in range(guess):
@@ -71,7 +67,6 @@ def probable_key_length(ciphertext, en):
 def print_coincidences(coincidences_array):
     for i in range(len(coincidences_array)):
         print(str(i) + ": " + str(coincidences_array[i]))
-    print()
 
 
 def frequencies(seq, en):
@@ -87,8 +82,7 @@ def frequencies(seq, en):
         for l in sequence_offset:
             c[ord(l) - ord('a')] += 1
         for j in range(26):
-            if len(seq) > 0:
-                c[j] *= (1.0 / float(len(seq)))
+            c[j] *= (1.0 / float(len(seq)))
         for j in range(26):
             sum_sq += ((c[j] - float(letter_frequencies[j])) ** 2) / float(letter_frequencies[j])
         chi_squared_array[i] = sum_sq
@@ -107,28 +101,20 @@ def get_key(ciphertext, key_length, en):
 
 
 def attack():
-    language = input("Insert 'en' for english or 'pt' for portuguese: ")
+    language = input("Insert 1 for english and 2 for portuguese: ")
     en = True
-    if language == 'pt':
+    if language == '2':
         en = False
-    ciphertext_unfiltered = input("Insert the ciphed text: ")
+    ciphertext_unfiltered = input("Insert ciphed text: ")
     ciphertext = filter_string(ciphertext_unfiltered)
     probable_key_length(ciphertext, en)
-    '''
     key_length_guess = input("Insert the key lenght: ")
     vig.key = get_key(ciphertext, key_length_guess, en)
     print("Possible key: " + vig.key)
-    print("Possible message:", vig.decipher(ciphertext), "\n")
-    '''
-    for x in range(len(coincidences)):
-        if coincidences[x] > 0:
-            print("key lenght:", x)
-            vig.key = get_key(ciphertext, x, en)
-            print("Possible key: " + vig.key)
-            print("Possible message:", vig.decipher(ciphertext), "\n")
+    print("Possible message: " + vig.decipher(ciphertext) + "\n")
 
 
-class Vigenere():
+class Vigenere:
 
     def a2int(self, ch):
         ch = ch.upper()
@@ -176,11 +162,13 @@ if __name__ == "__main__":
 
         if op == 1:
             vig.key = input('\nInsert a key: \n')
+            vig.key = filter_string(vig.key)
             cipher = vig.encipher(input('\nInsert a message to be ciphed: \n'))
             print("\ngenerated message:\n" + cipher + "\n")
 
         elif op == 2:
             vig.key = input('\nInsert a key: \n')
+            vig.key = filter_string(vig.key)
             msg = vig.decipher(list(input('\nInsert a ciphed message to be deciphed\n')))
             print("\nObtained message:\n" + msg + "\n")
 
