@@ -1,13 +1,7 @@
 # Alunos: Henrique Valente Lima 211055380
 #         Gabriel Brito Franca  211020867
 
-import re
-
-en_frequencies = [0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015,
-                  0.06094, 0.06966, 0.00153, 0.00772, 0.04025, 0.02406, 0.06749,
-                  0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056, 0.02758,
-                  0.00978, 0.02360, 0.00150, 0.01974, 0.00074]
-
+# array containing the frequencies of each letter in portuguese
 pt_frequencies = [0.1463, 0.0104, 0.0388, 0.0499, 0.1257, 0.0102, 0.0130, 0.0128,
                   0.0618, 0.0040, 0.0002, 0.0278, 0.0474, 0.0505, 0.1073, 0.0252,
                   0.012, 0.0653, 0.0781, 0.0434, 0.0463, 0.0167, 0.0001, 0.0021,
@@ -17,165 +11,190 @@ letters = 'abcdefghijklmnopqrstuvwxyz'
 coincidences = []
 
 
-def filter_string(string):
-    string = ''.join(x.lower() for x in string if x.isalpha())
-    return string
+# Returns the Index of Coincidence for the "section" of the given cipher message
+def get_index_coincidence(ciphermsg):
+    x = float(len(ciphermsg))
+    frequency_sum: float = 0.0
+
+    # Using Index of Coincidence formula
+    for a in letters:
+        frequency_sum += ciphermsg.count(a) * (ciphermsg.count(a) - 1)
+
+    # Using Index of Coincidence formula
+    try:
+        indexCoincidence = frequency_sum / (x * (x - 1))
+        return indexCoincidence
+    except ZeroDivisionError:
+        return frequency_sum
 
 
-def show_coincidences(cipherText):
-    counter = 0
-    cipherLength = len(cipherText)
-    copy = cipherText
-    for offset in range(1, cipherLength // 2):
-        j = 0
-        for i in range(offset, cipherLength):
-            if cipherText[i] == copy[j]:
-                counter += 1
-            j += 1
-        print(str(offset) + ": " + str(counter))
-        counter = 0
+# Returns the key length with the highest average Index of Coincidence
+def get_key_length(ciphertext):
+    index_coincidence_table = []
 
+    # Splits the ciphertext into sequences based on the guessed key length from 0 until the max key length guess (20)
+    # Ex. guessing a key length of 2 splits the "12345678" into "1357" and "2468"
+    # This procedure of breaking cipher message into sequences and sorting it by the Index of Coincidence
+    # The guessed key length with the highest index of coincidence is the most probable key length
+    for guess_len in range(20):
+        index_coincidence_sum = 0.0
+        avg_index_coincidence = 0.0
+        for i in range(guess_len):
+            sequence = ""
+            # breaks the ciphertext into sequences
+            for j in range(0, len(ciphertext[i:]), guess_len):
+                sequence += ciphertext[i + j]
+            index_coincidence_sum += get_index_coincidence(sequence)
+        # obviously don't want to divide by zero
+        if not guess_len == 0:
+            avg_index_coincidence = index_coincidence_sum / guess_len
+        index_coincidence_table.append(avg_index_coincidence)
 
-def get_c(sequence):
-    N = float(len(sequence))
-    frequency_sum = 0.0
-    for letter in letters:
-        frequency_sum += sequence.count(letter) * (sequence.count(letter) - 1)
-    if N * (N - 1) <= 0:
-        index = frequency_sum / 1
+    # returns the index of the highest Index of Coincidence (most probable key length)
+    best_guess = index_coincidence_table.index(sorted(index_coincidence_table, reverse=True)[0])
+    second_best_guess = index_coincidence_table.index(sorted(index_coincidence_table, reverse=True)[1])
+
+    # Since this program can sometimes think that a key is literally twice itself, or three times itself,
+    # it's best to return the smaller amount.
+    # Ex. the actual key is "dog", but the program thinks the key is "dogdog" or "dogdogdog"
+    # (The reason for this error is that the frequency distribution for the key "dog" vs "dogdog" would be nearly equal)
+    if best_guess % second_best_guess == 0:
+        return second_best_guess
     else:
-        index = frequency_sum / (N * (N - 1))
-    return index * 26
+        return best_guess
 
 
-def probable_key_length(ciphertext, en):
-    if en:
-        print("\n\n--------> Search values next to 1.73 <--------\n")
-    else:
-        print("\n\n--------> Search values next to 1.94 <--------\n")
-    for guess in range(21):
-        coincidence_sum = 0.0
-        for i in range(guess):
-            letter_sequence = ""
-            for j in range(0, len(ciphertext[i:]), guess):
-                letter_sequence += ciphertext[i + j]
-            coincidence_sum = get_c(letter_sequence)
-        coincidences.append(coincidence_sum)
-    print_coincidences(coincidences)
+# Performs frequency analysis on the "sequence" of the ciphertext to return the letter for that part of the key
+# Uses the Chi-Squared Statistic to measure how similar two probability distributions are.
+# (The two being the ciphertext and regular english distribution)
+def frequency_analysis(sequence):
+    all_chi_squareds = [0.0] * 26
 
-
-def print_coincidences(coincidences_array):
-    for i in range(len(coincidences_array)):
-        print(str(i) + ": " + str(coincidences_array[i]))
-
-
-def frequencies(seq, en):
-    chi_squared_array = [0] * 26
-    if en:
-        letter_frequencies = en_frequencies
-    else:
-        letter_frequencies = pt_frequencies
+    i: int
     for i in range(26):
-        sum_sq = 0.0
-        sequence_offset = [chr(((ord(seq[j]) - 97 - i) % 26) + 97) for j in range(len(seq))]
-        c = [0] * 26
-        for l in sequence_offset:
-            c[ord(l) - ord('a')] += 1
-        for j in range(26):
-            c[j] *= (1.0 / float(len(seq)))
-        for j in range(26):
-            sum_sq += ((c[j] - float(letter_frequencies[j])) ** 2) / float(letter_frequencies[j])
-        chi_squared_array[i] = sum_sq
-    shift = chi_squared_array.index(min(chi_squared_array))
+
+        chi_squared_sum = 0.0
+
+        sequence_offset = [chr(((ord(sequence[j]) - 97 - i) % 26) + 97) for j in range(len(sequence))]
+        v = [0] * 26
+        # count the numbers of each letter in the sequence_offset already in ascii
+        for x in sequence_offset:
+            v[ord(x) - ord('a')] += 1
+        # divide the array by the length of the sequence to get the frequency percentages
+        for y in range(26):
+            v[y] *= (1.0 / float(len(sequence)))
+
+        # now you can compare to the english frequencies
+        for z in range(26):
+            chi_squared_sum += ((v[z] - float(pt_frequencies[z])) ** 2) / float(pt_frequencies[z])
+
+        # add it to the big table of chi squareds
+        all_chi_squareds.append(chi_squared_sum)
+
+    # return the key letter that it needs to be shifted by
+    # this is found by the smallest difference between sequence distribution and portuguese distribution
+    shift = all_chi_squareds.index(min(all_chi_squareds))
+
+    # return the letter
     return chr(shift + 97)
 
 
-def get_key(ciphertext, key_length, en):
-    key = ''
-    for i in range(int(key_length)):
+def get_key(ciphertext, kl):
+    k = ''
+
+    # Calculates the letter frequency table for each letter of the key
+    for i in range(kl):
         sequence = ""
-        for j in range(0, len(ciphertext[i:]), int(key_length)):
+        # breaks the cipher message into sequences
+        for j in range(0, len(ciphertext[i:]), key_length):
             sequence += ciphertext[i + j]
-        key += frequencies(sequence, en)
-    return key
+        k += frequency_analysis(sequence)
+
+    return k
 
 
-def attack():
-    language = input("Insert 1 for english and 2 for portuguese: ")
-    en = True
-    if language == '2':
-        en = False
-    ciphertext_unfiltered = input("Insert ciphed text: ")
-    ciphertext = filter_string(ciphertext_unfiltered)
-    probable_key_length(ciphertext, en)
-    key_length_guess = input("Insert the key lenght: ")
-    vig.key = get_key(ciphertext, key_length_guess, en)
-    print("Possible key: " + vig.key)
-    print("Possible message: " + vig.decipher(ciphertext) + "\n")
+# Returns the message given the cipher message and a key
+def decrypt(ciphermsg, key):
+    msg_ascii = []
+    # Creates an ascii array values of the cipher message and the key
+    cipher_ascii = [ord(letter) for letter in ciphermsg]
+    key_ascii = [ord(letter) for letter in key]
+
+    # Turns each ascii value of the cipher message into the ascii value of the message
+    for i in range(len(cipher_ascii)):
+        msg_ascii.append(((cipher_ascii[i] - key_ascii[i % len(key)]) % 26) + 97)
+
+    # Turns the ascii array values into characters
+    msg = ''.join(chr(i) for i in msg_ascii)
+    return msg
 
 
-class Vigenere:
+def encrypt(msg, key):
+    # Creates an ascii array values of the message and the key
+    msg_ascii = [ord(letter) for letter in msg]
+    key_ascii = [ord(letter) for letter in key]
+    cipher_ascii = []
 
-    def a2int(self, ch):
-        ch = ch.upper()
-        arr = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9, 'K': 10,
-               'L': 11, 'M': 12, 'N': 13, 'O': 14, 'P': 15, 'Q': 16, 'R': 17, 'S': 18, 'T': 19, 'U': 20,
-               'V': 21, 'W': 22, 'X': 23, 'Y': 24, 'Z': 25}
-        return arr[ch]
+    # Turns each ascii value of the message into the ascii value of the cipher message
+    for i in range(len(msg_ascii)):
 
-    def int2a(self, i):
-        i = i % 26
-        arr = (
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-        'W', 'X', 'Y', 'Z')
-        return arr[i]
+        temp = msg_ascii[i] - 97 + key_ascii[i % len(key)]
+        if temp <= 122:
+            cipher_ascii.append(temp)
+        else:
+            # Go from the start
+            cipher_ascii.append(temp - 26)
 
-    def filter_msg(self, text, filter='[^A-Z]'):
-        return re.sub(filter, '', text.upper())
-
-    def __init__(self, key='fortification'):
-        self.key = [k.upper() for k in key]
-
-    def encipher(self, string):
-        string = self.filter_msg(str(string))
-        ret = ''
-        for (i, c) in enumerate(string):
-            i = i % len(self.key)
-            ret += self.int2a(self.a2int(c) + self.a2int(self.key[i]))
-        return ret
-
-    def decipher(self, string):
-        string = self.filter_msg(str(string))
-        ret = ''
-        for (i, c) in enumerate(string):
-            i = i % len(self.key)
-            ret += self.int2a(self.a2int(c) - self.a2int(self.key[i]))
-        return ret
+    # Turns the ascii array values into letters
+    ciphermsg = ''.join(chr(i) for i in cipher_ascii)
+    return ciphermsg
 
 
-if __name__ == "__main__":
-
-    vig = Vigenere()
-
+if __name__ == '__main__':
     while True:
-        op = int(input("Select an option:\n 1 - Cipher\n 2 - Decipher\n 3 - Attack\n 4 - Exit\n"))
+        op1 = int(input("1- Encrypt\n2- Decrypt\n3- Exit\n"))
+        if op1 == 1:
+            msg = input("Insert message to be encrypted: \n")
+            key = input("Insert key to encrypt with: \n")
 
-        if op == 1:
-            vig.key = input('\nInsert a key: \n')
-            vig.key = filter_string(vig.key)
-            cipher = vig.encipher(input('\nInsert a message to be ciphed: \n'))
-            print("\ngenerated message:\n" + cipher + "\n")
+            # Remove all that is not in lowercase alphabet
+            msg = ''.join(x.lower() for x in msg if x.isalpha())
+            key = ''.join(x.lower() for x in key if x.isalpha())
 
-        elif op == 2:
-            vig.key = input('\nInsert a key: \n')
-            vig.key = filter_string(vig.key)
-            msg = vig.decipher(list(input('\nInsert a ciphed message to be deciphed\n')))
-            print("\nObtained message:\n" + msg + "\n")
+            cipher = encrypt(msg, key)
+            print(f"result: {cipher}\n")
 
-        elif op == 3:
-            attack()
+        elif op1 == 2:
+            msg = input("Insert ciphed message to decrypted: \n")
 
-        elif op == 4:
+            # Remove all that is not in lowercase alphabet
+            msg = ''.join(x.lower() for x in msg if x.isalpha())
+
+            while True:
+                op2 = int(input("Insert 1 to break, 2 to decrypt or 3 to go back: \n"))
+                if op2 == 1:
+
+                    key_length = get_key_length(msg)
+                    print(f"Most probable key lenght {key_length}")
+
+                    key = get_key(msg, key_length)
+                    msg = decrypt(msg, key)
+
+                    print(f"Key: {key}")
+                    print(f"Message: {msg}")
+                    break
+                elif op2 == 2:
+
+                    key = input("Enter key to decrypt with: ")
+                    key = ''.join(x.lower() for x in key if x.isalpha())
+                    msg = decrypt(msg, key)
+
+                    print(f"Message: {msg}")
+                    break
+                elif op2 == 3:
+                    break
+
+        elif op1 == 3:
             break
 
     print("Thanks for using me!")
