@@ -1,54 +1,54 @@
-english = [0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015,
+ingles = [0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015,
            0.06094, 0.06966, 0.00153, 0.00772, 0.04025, 0.02406, 0.06749,
            0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056, 0.02758,
            0.00978, 0.02360, 0.00150, 0.01974, 0.00074]
 
-portuguese = [0.1463, 0.0104, 0.0388, 0.0499, 0.1257, 0.0102, 0.0130, 0.0128,
+portugues = [0.1463, 0.0104, 0.0388, 0.0499, 0.1257, 0.0102, 0.0130, 0.0128,
               0.0618, 0.0040, 0.0002, 0.0278, 0.0474, 0.0505, 0.1073, 0.0252,
               0.012, 0.0653, 0.0781, 0.0434, 0.0463, 0.0167, 0.0001, 0.0021,
               0.0001, 0.0047]
 
-alphabet = 'abcdefghijklmnopqrstuvwxyz'
+alfabeto = 'abcdefghijklmnopqrstuvwxyz'
 
 
-def probable_length(cipher):
-    sorted_coincidences = {}
+def tamanho_possivel(cifra):
+    coincidencia_ordenada = {}
 
     if op1 == '1':
-        print("In crescent order to help finding the closest number to 1.73:")
-        print("On the left is the key length and on the right is the frequency number for this key length\n")
+        print("Em ordem crescente para ajudar a achar o número mais próximo de 1,73:")
+        print("A esquerda é o tamanho da chave e a direita é o número de frequência do tamanho da chave\n")
     else:
-        print("In crescent order to help finding the closest number to 1.94:")
-        print("On the left is the key length and on the right is the frequency number for this key length\n")
+        print("Em ordem crescente para ajudar a achar o número mais próximo de 1,94:")
+        print("A esquerda é o tamanho da chave e a direita é o número de frequência do tamanho da chave\n")
 
     for i in range(21):
         c_sum = 0.0
 
         for j in range(i):
-            letter_sequence = ""
+            sequencia_letra = ""
 
-            for k in range(0, len(cipher[j:]), i):
-                letter_sequence += cipher[j + k]
+            for k in range(0, len(cifra[j:]), i):
+                sequencia_letra += cifra[j + k]
 
-            c_sum = get_coincidences(letter_sequence)
+            c_sum = get_coincidencias(sequencia_letra)
 
-        coincidences.append(c_sum)
+        coincidencia.append(c_sum)
 
-    for i, c in enumerate(coincidences):
-        sorted_coincidences[c] = i
+    for i, c in enumerate(coincidencia):
+        coincidencia_ordenada[c] = i
 
-    for x in sorted(sorted_coincidences.keys()):
-        print(f"{sorted_coincidences[x]}: {x:.3f}")
+    for x in sorted(coincidencia_ordenada.keys()):
+        print(f"{coincidencia_ordenada[x]}: {x:.3f}")
 
     print()
 
 
-def get_coincidences(sequence):
-    n = float(len(sequence))
+def get_coincidencias(sequencia):
+    n = float(len(sequencia))
     f_sum = 0.0
 
-    for letter in alphabet:
-        f_sum += sequence.count(letter) * (sequence.count(letter) - 1)
+    for letra in alfabeto:
+        f_sum += sequencia.count(letra) * (sequencia.count(letra) - 1)
 
     if n * (n - 1) <= 0:
         index = f_sum / 1
@@ -59,23 +59,23 @@ def get_coincidences(sequence):
     return index * 26
 
 
-def get_key(cipher, length):
+def get_chave(cifra, tamanho):
     p_key = ''
-    for i in range(int(length)):
+    for i in range(int(tamanho)):
         sequence = ""
-        for j in range(0, len(cipher[i:]), int(length)):
-            sequence += cipher[i + j]
-        p_key += frequencies(sequence)
+        for j in range(0, len(cifra[i:]), int(tamanho)):
+            sequence += cifra[i + j]
+        p_key += frequencia(sequence)
     return p_key
 
 
-def frequencies(seq):
+def frequencia(seq):
     chi2_array = [0.0] * 26
 
     if op1 == '1':
-        l_frequencies = english
+        l_frequencia = ingles
     else:
-        l_frequencies = portuguese
+        l_frequencia = portugues
 
     for i in range(26):
         sum_sq = 0.0
@@ -89,7 +89,7 @@ def frequencies(seq):
             c[j] *= (1.0 / float(len(seq)))
 
         for j in range(26):
-            sum_sq += ((c[j] - float(l_frequencies[j])) ** 2) / float(l_frequencies[j])
+            sum_sq += ((c[j] - float(l_frequencia[j])) ** 2) / float(l_frequencia[j])
 
         chi2_array[i] = sum_sq
 
@@ -98,20 +98,20 @@ def frequencies(seq):
 
 
 if __name__ == '__main__':
-    coincidences = []
+    coincidencia = []
 
     while True:
-        op1 = input("1 - English\n2 - Portuguese\n3 - Exit\n")
+        op1 = input("1 - Ingles\n2 - Portugues\n3 - Sair\n")
 
         if op1 != '1' and op1 != '2' and op1 != '3':
-            print("Insert a valid option!")
+            print("insira uma opção válida!")
 
         if op1 == '3':
             break
 
-        msg = input("Insert cipher text:\n")
+        msg = input("Insira texto cifrado:\n")
         msg = ''.join(x.lower() for x in msg if x.isalpha())
 
-        probable_length(msg)
-        attempt = input("Insert the possible key length:\n")
-        print(f"Possible key:\n{get_key(msg, attempt)}\n")
+        tamanho_possivel(msg)
+        attempt = input("Insira o tamanho provavel da chave:\n")
+        print(f"chave provavel:\n{get_chave(msg, attempt)}\n")
