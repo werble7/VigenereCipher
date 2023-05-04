@@ -19,5 +19,13 @@ pressione 3 - para sair
 
 # Viginere Breaker
 
-Abrir arquivo vigenereCypher.py
+Passo 1 - Abrir arquivo vigenereCypher.py
+
+passo 2 - escolha a língua da cifra.
+
+passo 3 - insira o texto cifrado.
+
+passo 4 - Escolha o tamanho da chave com o maior valor de frequencia.
+
+passo 5 - dê prioridade as chaves com maior valor de frequencia e menor tamanho.
 
