@@ -8,7 +8,7 @@ Abrir o arquivo ViginereCypher.py
 
 pressione 1 - pra gerar cifra
   inserir mensagem para ser cifrada (ATENÇÃO! copiar e colar pode ocorrer um problema relacionado a quebra de linha)
-    inserir chave
+    inserir chave e
       pronto!
  
 pressione 2 - para decifrar
