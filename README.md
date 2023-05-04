@@ -21,3 +21,10 @@ pressione 3 - para sair
 
 Abrir arquivo vigenereCypher.py
 
+escolha a língua da cifra.
+
+insira o texto cifrado.
+
+Escolha o tamanho da chave com o maior valor de frequencia.
+dê prioridade as chaves com maior valor de frequencia e menor tamanho.
+
