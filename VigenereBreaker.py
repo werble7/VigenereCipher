@@ -12,7 +12,6 @@ alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
 
 def probable_length(cipher):
-
     sorted_coincidences = {}
 
     if op1 == '1':
@@ -23,8 +22,7 @@ def probable_length(cipher):
         print("On the left is the key length and on the right is the frequency number for this key length\n")
 
     for i in range(21):
-
-        csum = 0.0
+        c_sum = 0.0
 
         for j in range(i):
             letter_sequence = ""
@@ -32,54 +30,54 @@ def probable_length(cipher):
             for k in range(0, len(cipher[j:]), i):
                 letter_sequence += cipher[j + k]
 
-            csum = get_coincidences(letter_sequence)
+            c_sum = get_coincidences(letter_sequence)
 
-        coincidences.append(csum)
+        coincidences.append(c_sum)
 
     for i, c in enumerate(coincidences):
         sorted_coincidences[c] = i
+
     for x in sorted(sorted_coincidences.keys()):
         print(f"{sorted_coincidences[x]}: {x:.3f}")
+
     print()
 
 
 def get_coincidences(sequence):
-
     n = float(len(sequence))
-    fsum = 0.0
+    f_sum = 0.0
 
     for letter in alphabet:
-        fsum += sequence.count(letter) * (sequence.count(letter) - 1)
+        f_sum += sequence.count(letter) * (sequence.count(letter) - 1)
 
     if n * (n - 1) <= 0:
-        index = fsum / 1
+        index = f_sum / 1
 
     else:
-        index = fsum / (n * (n - 1))
+        index = f_sum / (n * (n - 1))
 
     return index * 26
 
 
 def get_key(cipher, length):
-    key = ''
+    p_key = ''
     for i in range(int(length)):
         sequence = ""
         for j in range(0, len(cipher[i:]), int(length)):
             sequence += cipher[i + j]
-        key += frequencies(sequence)
-    return key
+        p_key += frequencies(sequence)
+    return p_key
 
 
 def frequencies(seq):
     chi2_array = [0.0] * 26
 
     if op1 == '1':
-        lfrequencies = english
+        l_frequencies = english
     else:
-        lfrequencies = portuguese
+        l_frequencies = portuguese
 
     for i in range(26):
-
         sum_sq = 0.0
         sequence_offset = [chr(((ord(seq[j]) - 97 - i) % 26) + 97) for j in range(len(seq))]
         c = [0] * 26
@@ -91,20 +89,18 @@ def frequencies(seq):
             c[j] *= (1.0 / float(len(seq)))
 
         for j in range(26):
-            sum_sq += ((c[j] - float(lfrequencies[j])) ** 2) / float(lfrequencies[j])
+            sum_sq += ((c[j] - float(l_frequencies[j])) ** 2) / float(l_frequencies[j])
 
         chi2_array[i] = sum_sq
 
-    shift = chi2_array.index(min(chi2_array))
-    return chr(shift + 97)
+    shift = chi2_array.index(min(chi2_array)) + 97
+    return chr(shift)
 
 
 if __name__ == '__main__':
-
     coincidences = []
 
     while True:
-
         op1 = input("1 - English\n2 - Portuguese\n3 - Exit\n")
 
         if op1 != '1' and op1 != '2' and op1 != '3':
