@@ -1,3 +1,7 @@
+# Alunos: 
+#         Henrique Valente Lima 211055380
+#         Gabriel Brito Franca  211020867
+
 # Criptografia Viginere
 Trabalho de Segurança Computacional, criar um cifrador e decifrador de Vigenère e um atacante para descobrir a cifra à força
 
@@ -29,6 +33,4 @@ passo 4 - Escolha o tamanho da chave com o maior valor de frequencia.
 
 passo 5 - dê prioridade as chaves com maior valor de frequencia e menor tamanho.
 
-# Alunos: 
-#         Henrique Valente Lima 211055380
-#         Gabriel Brito Franca  211020867
+
