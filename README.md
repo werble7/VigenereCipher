@@ -1,4 +1,3 @@
-# Alunos: 
 #         Henrique Valente Lima 211055380
 #         Gabriel Brito Franca  211020867
 
