@@ -29,3 +29,6 @@ passo 4 - Escolha o tamanho da chave com o maior valor de frequencia.
 
 passo 5 - dê prioridade as chaves com maior valor de frequencia e menor tamanho.
 
+# Alunos: 
+#         Henrique Valente Lima 211055380
+#         Gabriel Brito Franca  211020867
