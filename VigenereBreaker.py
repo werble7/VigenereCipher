@@ -21,7 +21,7 @@ def probable_length(cipher):
         print("In crescent order to help finding the closest number to 1.94:")
         print("On the left is the key length and on the right is the frequency number for this key length\n")
 
-    for i in range(21):
+    for i in range(len(cipher)):
         c_sum = 0.0
 
         for j in range(i):
@@ -47,16 +47,13 @@ def get_coincidences(sequence):
     n = float(len(sequence))
     f_sum = 0.0
 
+    if n == 1:
+        return 0
+
     for letter in alphabet:
         f_sum += sequence.count(letter) * (sequence.count(letter) - 1)
 
-    if n * (n - 1) <= 0:
-        index = f_sum / 1
-
-    else:
-        index = f_sum / (n * (n - 1))
-
-    return index * 26
+    return (f_sum / (n * (n - 1))) * 26
 
 
 def get_key(cipher, length):
@@ -83,13 +80,11 @@ def frequencies(seq):
         c = [0] * 26
 
         for j in sequence_offset:
-            c[ord(j) - ord('a')] += 1
+            c[ord(j) - 97] += 1
 
-        for j in range(26):
-            c[j] *= (1.0 / float(len(seq)))
-
-        for j in range(26):
-            sum_sq += ((c[j] - float(l_frequencies[j])) ** 2) / float(l_frequencies[j])
+        for k in range(26):
+            c[k] /= len(seq)
+            sum_sq += ((c[k] - l_frequencies[k]) ** 2) / l_frequencies[k]
 
         chi2_array[i] = sum_sq
 
