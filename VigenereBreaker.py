@@ -88,6 +88,8 @@ def frequencies(seq):
 
         chi2_array[i] = sum_sq
 
+    print(chi2_array)
+
     shift = chi2_array.index(min(chi2_array)) + 97
     return chr(shift)
 

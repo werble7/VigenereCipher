@@ -27,27 +27,27 @@ def decrypt(d_msg, d_key):
 
 if __name__ == '__main__':
     while True:
-        op1 = int(input("1- Criptografar\n2- descriptografar\n3- Sair\n"))
+        op1 = int(input("1- Encrypt\n2- Decrypt\n3- Exit\n"))
 
         if op1 == 1:
-            msg = input("Insira a mensagem que serar cifrada:\n")
-            key = input("Insira chave: \n")
+            msg = input("Insert a message to be encrypt: \n")
+            key = input("Insert key: \n")
 
             msg = ''.join(x.lower() for x in msg if x.isalpha())
             key = ''.join(x.lower() for x in key if x.isalpha())
 
             msg = encrypt(msg, key)
-            print(f"resultado: {msg}\n")
+            print(f"Result: {msg}\n")
 
         elif op1 == 2:
-            msg = input("Insira mensagem cifrada: \n")
-            key = input("Insira a chave: ")\
+            msg = input("Insert a cipher message to be decrypt: \n")
+            key = input("Insert key: ")\
 
             msg = ''.join(x.lower() for x in msg if x.isalpha())
             key = ''.join(x.lower() for x in key if x.isalpha())
 
             msg = decrypt(msg, key)
-            print(f"Menssagem: {msg}\n")
+            print(f"Message: {msg}\n")
 
         elif op1 == 3:
             break
