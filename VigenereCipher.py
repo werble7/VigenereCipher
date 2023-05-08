@@ -3,13 +3,13 @@
 
 def encrypt(e_msg, e_key):
     e_ascii = [ord(letter) for letter in e_msg]
-    key_ascii = [ord(letter) for letter in e_key]
-    cipher_ascii = []
+    chave_ascii = [ord(letter) for letter in e_key]
+    cifra_ascii = []
 
     for i in range(len(e_ascii)):
-        cipher_ascii.append(((e_ascii[i] + key_ascii[i % len(e_key)] - 194) % 26) + 97)
+        cifra_ascii.append(((e_ascii[i] + chave_ascii[i % len(e_key)] - 194) % 26) + 97)
 
-    e_msg = ''.join(chr(i) for i in cipher_ascii)
+    e_msg = ''.join(chr(i) for i in cifra_ascii)
     return e_msg
 
 
@@ -27,27 +27,27 @@ def decrypt(d_msg, d_key):
 
 if __name__ == '__main__':
     while True:
-        op1 = int(input("1- Encrypt\n2- Decrypt\n3- Exit\n"))
+        op1 = int(input("1- Criptografar\n2- descriptografar\n3- Sair\n"))
 
         if op1 == 1:
-            msg = input("Insert message to be encrypted: \n")
-            key = input("Insert key to encrypt with: \n")
+            msg = input("Insira a mensagem que serar cifrada:\n")
+            key = input("Insira chave: \n")
 
             msg = ''.join(x.lower() for x in msg if x.isalpha())
             key = ''.join(x.lower() for x in key if x.isalpha())
 
             msg = encrypt(msg, key)
-            print(f"result: {msg}\n")
+            print(f"resultado: {msg}\n")
 
         elif op1 == 2:
-            msg = input("Insert cipher message to be decrypted: \n")
-            key = input("Enter key to decrypt with: ")\
+            msg = input("Insira mensagem cifrada: \n")
+            key = input("Insira a chave: ")\
 
             msg = ''.join(x.lower() for x in msg if x.isalpha())
             key = ''.join(x.lower() for x in key if x.isalpha())
 
             msg = decrypt(msg, key)
-            print(f"Message: {msg}\n")
+            print(f"Menssagem: {msg}\n")
 
         elif op1 == 3:
             break
